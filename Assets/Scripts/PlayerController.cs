@@ -14,9 +14,9 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Transform checkGroundPoint;
     private Transform transformArrowPoint;
-    private Transform transformPlayerController;
 
     private bool isGrounded;
+    private bool isFlipedInX;
     private int idSpeed;
     private int idIsGrounded;
     private int idShootArrow;
@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
-        transformPlayerController = GetComponent<Transform>();
     }
 
     private void Start()
@@ -41,7 +40,7 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         Jump();
-        CheckDirection();
+        CheckAndSetDirection();
         ShootArrow();
     }
 
@@ -51,7 +50,7 @@ public class PlayerController : MonoBehaviour
         {
             ArrowController tempArrowController = Instantiate(arrowController, transformArrowPoint.position, transformArrowPoint.rotation);
 
-            if (transformPlayerController.localScale.x == -1)
+            if (isFlipedInX)
             {
                 tempArrowController.ArrowDirection = new Vector2(-1, 0);
                 tempArrowController.GetComponent<SpriteRenderer>().flipX = true;
@@ -80,11 +79,19 @@ public class PlayerController : MonoBehaviour
         animator.SetBool(idIsGrounded, isGrounded);
     }
 
-    private void CheckDirection()
+    private bool CheckAndSetDirection()
     {
         if (playerRB.velocity.x < 0)
+        {
             transform.localScale = new Vector3(-1, 1, 1);
+            isFlipedInX = true;
+        }
         else if (playerRB.velocity.x > 0)
+        {
             transform.localScale = Vector3.one;
+            isFlipedInX = false;
+        }
+
+        return isFlipedInX;
     }
 }
