@@ -6,14 +6,17 @@ using UnityEngine;
 public class ArrowController : MonoBehaviour
 {
     [SerializeField] private float arrowSpeed;
+    [SerializeField] private GameObject arrowImpact;
     private Rigidbody2D arrowRB;
-    private Vector2 arrowDirection;
+    private Vector2 _arrowDirection;
+    private Transform transformArrow;
 
-    public Vector2 ArrowDirection { get => arrowDirection; set => arrowDirection = value; }
+    public Vector2 ArrowDirection { get => _arrowDirection; set => _arrowDirection = value; }
 
     void Awake()
     {
         arrowRB = GetComponent<Rigidbody2D>();
+        transformArrow = GetComponent<Transform>();
     }
 
     void Update()
@@ -23,6 +26,7 @@ public class ArrowController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
+        Instantiate(arrowImpact, transformArrow.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
