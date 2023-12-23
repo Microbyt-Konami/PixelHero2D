@@ -19,10 +19,13 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded;
     private bool isFlipedInX;
+    private bool isIdle;
+    private bool canDoubleJump;
+
     private int idSpeed;
     private int idIsGrounded;
     private int idShootArrow;
-    private bool isIdle;
+    private int idCanDoubleJump;
 
     private void Awake()
     {
@@ -38,6 +41,7 @@ public class PlayerController : MonoBehaviour
         idSpeed = Animator.StringToHash("speed");
         idIsGrounded = Animator.StringToHash("isGrounded");
         idShootArrow = Animator.StringToHash("shootArrow");
+        idCanDoubleJump = Animator.StringToHash("canDoubleJump");
     }
 
     void Update()
@@ -79,9 +83,18 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, 0.2f, selectLayerMask);
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && (isGrounded || canDoubleJump))
         {
-            Instantiate(dustJump, transformDustPoint.position, Quaternion.identity);
+            if (isGrounded)
+            {
+                canDoubleJump = true;
+                Instantiate(dustJump, transformDustPoint.position, Quaternion.identity);
+            }
+            else
+            {
+                canDoubleJump = false;
+                animator.SetTrigger(idCanDoubleJump);
+            }
             playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
         }
         animator.SetBool(idIsGrounded, isGrounded);
