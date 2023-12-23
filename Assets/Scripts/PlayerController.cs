@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool(idIsGrounded, isGrounded);
     }
 
-    private bool CheckAndSetDirection()
+    private void CheckAndSetDirection()
     {
         if (playerRB.velocity.x < 0)
         {
@@ -112,13 +112,11 @@ public class PlayerController : MonoBehaviour
             transform.localScale = Vector3.one;
             isFlipedInX = false;
         }
-
-        return isFlipedInX;
     }
 
     private void PlayDust()
     {
-        if ((playerRB.velocity.x < 0 || playerRB.velocity.x > 0) && isIdle)
+        if ((playerRB.velocity.x != 0) && isIdle)
         {
             isIdle = false;
             if (isGrounded)
