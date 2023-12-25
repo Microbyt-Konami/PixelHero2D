@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private SpriteRenderer afterImageSR;
     [SerializeField] private float afterImageLifetime;
     [SerializeField] private Color afterImageColor;
+    [SerializeField] private float afterImageTimeBetween;
+    [SerializeField] private float afterImageCounter;
 
     // Variables
     private float dashCounter;
@@ -75,6 +77,9 @@ public class PlayerController : MonoBehaviour
         {
             dashCounter -= Time.deltaTime;
             playerRB.velocity = new Vector2(dashSpeed * transformPlayer.localScale.x, playerRB.velocity.y);
+            afterImageCounter -= Time.deltaTime;
+            if (afterImageCounter <= 0)
+                ShowAfterImage();
         }
         else
             Move();
@@ -161,5 +166,6 @@ public class PlayerController : MonoBehaviour
         afterImage.transform.localScale = transformPlayer.localScale;
         afterImage.color = afterImageColor;
         Destroy(afterImage.gameObject, afterImageLifetime);
+        afterImageCounter = afterImageTimeBetween;
     }
 }
