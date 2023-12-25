@@ -5,23 +5,33 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    // Fields
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask selectLayerMask;
     [SerializeField] private ArrowController arrowController;
     [SerializeField] private GameObject dustJump;
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private float dashTime;
 
+    // Variables
+    private float dashCounter;
+
+    // Compoments
     private Rigidbody2D playerRB;
     private Animator animator;
     private Transform checkGroundPoint;
     private Transform transformArrowPoint;
     private Transform transformDustPoint;
+    private Transform transformPlayer;
 
+    // Flags
     private bool isGrounded;
     private bool isFlipedInX;
     private bool isIdle;
     private bool canDoubleJump;
 
+    // Id Parameters Animator
     private int idSpeed;
     private int idIsGrounded;
     private int idShootArrow;
@@ -30,6 +40,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
+        transformPlayer = GetComponent<Transform>();
     }
 
     private void Start()
@@ -46,11 +57,27 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        Move();
+        Dash();
         Jump();
         CheckAndSetDirection();
         ShootArrow();
         PlayDust();
+    }
+
+    private void Dash()
+    {
+        if (Input.GetButtonDown("Fire2"))
+        {
+            dashCounter = dashTime;
+        }
+
+        if (dashCounter > 0)
+        {
+            dashCounter -= Time.deltaTime;
+            playerRB.velocity = new Vector2(dashSpeed * transformPlayer.localScale.x, playerRB.velocity.y);
+        }
+        else
+            Move();
     }
 
     private void ShootArrow()

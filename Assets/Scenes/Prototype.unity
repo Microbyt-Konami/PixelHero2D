@@ -388,6 +388,8 @@ MonoBehaviour:
     m_Bits: 8
   arrowController: {fileID: 4502484709914368444, guid: a239884ec6a755a82a6362b2f164e559, type: 3}
   dustJump: {fileID: 1983506536206799902, guid: 3c250e46948a5a7479bd2014f0b66b0f, type: 3}
+  dashSpeed: 18
+  dashTime: 0.3
 --- !u!1 &1680783305
 GameObject:
   m_ObjectHideFlags: 0
