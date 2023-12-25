@@ -390,6 +390,10 @@ MonoBehaviour:
   dustJump: {fileID: 1983506536206799902, guid: 3c250e46948a5a7479bd2014f0b66b0f, type: 3}
   dashSpeed: 18
   dashTime: 0.3
+  playerSR: {fileID: 2049590579}
+  afterImageSR: {fileID: 243634212143800494, guid: a8d79e2f46fae6e48a1df43ffe9c3390, type: 3}
+  afterImageLifetime: 0.3
+  afterImageColor: {r: 0.3764706, g: 0.76862746, b: 0.6901961, a: 0.6666667}
 --- !u!1 &1680783305
 GameObject:
   m_ObjectHideFlags: 0

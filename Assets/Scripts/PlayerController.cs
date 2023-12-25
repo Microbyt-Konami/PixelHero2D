@@ -16,6 +16,11 @@ public class PlayerController : MonoBehaviour
     [Header("Player Dash")]
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTime;
+    [Header("Player Dash After Image")]
+    [SerializeField] private SpriteRenderer playerSR;
+    [SerializeField] private SpriteRenderer afterImageSR;
+    [SerializeField] private float afterImageLifetime;
+    [SerializeField] private Color afterImageColor;
 
     // Variables
     private float dashCounter;
@@ -63,6 +68,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Fire2"))
         {
             dashCounter = dashTime;
+            ShowAfterImage();
         }
 
         if (dashCounter > 0)
@@ -145,5 +151,15 @@ public class PlayerController : MonoBehaviour
         }
         if (playerRB.velocity.x == 0)
             isIdle = true;
+    }
+
+    private void ShowAfterImage()
+    {
+        SpriteRenderer afterImage = Instantiate(afterImageSR, transformPlayer.position, transformPlayer.rotation);
+
+        afterImage.sprite = playerSR.sprite;
+        afterImage.transform.localScale = transformPlayer.localScale;
+        afterImage.color = afterImageColor;
+        Destroy(afterImage.gameObject, afterImageLifetime);
     }
 }
