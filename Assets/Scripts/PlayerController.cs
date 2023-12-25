@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Fields
+    [Header("Player Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask selectLayerMask;
+    [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
+    [Header("Player Dust")]
     [SerializeField] private GameObject dustJump;
+    [Header("Player Dash")]
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTime;
 
@@ -20,22 +23,13 @@ public class PlayerController : MonoBehaviour
     // Compoments
     private Rigidbody2D playerRB;
     private Animator animator;
-    private Transform checkGroundPoint;
-    private Transform transformArrowPoint;
-    private Transform transformDustPoint;
-    private Transform transformPlayer;
+    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayer;
 
     // Flags
-    private bool isGrounded;
-    private bool isFlipedInX;
-    private bool isIdle;
-    private bool canDoubleJump;
+    private bool isGrounded, isFlipedInX, isIdle, canDoubleJump;
 
     // Id Parameters Animator
-    private int idSpeed;
-    private int idIsGrounded;
-    private int idShootArrow;
-    private int idCanDoubleJump;
+    private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
 
     private void Awake()
     {
