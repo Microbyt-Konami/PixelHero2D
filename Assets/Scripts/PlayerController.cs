@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask selectLayerMask;
+    [SerializeField] private float waitForBallMode;
     [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
     [Header("Player Dust")]
@@ -28,18 +29,22 @@ public class PlayerController : MonoBehaviour
     private float dashCounter;
     private float afterImageCounter;
     private float afterDashCounter;
+    private float ballModeCounter;
 
     // Compoments
     private Rigidbody2D playerRB;
     private Animator animator;
     private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayer;
 
+    // Player Sprites
+    private GameObject standingPlayer;
+    private GameObject ballPlayer;
+
     // Flags
     private bool isGrounded, isFlipedInX, isIdle, canDoubleJump;
 
     // Id Parameters Animator
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
-
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
@@ -48,6 +53,9 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        standingPlayer = GameObject.Find("StandingPlayer");
+        ballPlayer = GameObject.Find("BallPlayer");
+        ballPlayer.SetActive(false);
         checkGroundPoint = GameObject.Find("CheckGroundPoint").GetComponent<Transform>();
         transformArrowPoint = GameObject.Find("ArrowPoint").GetComponent<Transform>();
         transformDustPoint = GameObject.Find("DustPoint").GetComponent<Transform>();
@@ -65,6 +73,7 @@ public class PlayerController : MonoBehaviour
         CheckAndSetDirection();
         ShootArrow();
         PlayDust();
+        BallMode();
     }
 
     private void Dash()
@@ -176,5 +185,23 @@ public class PlayerController : MonoBehaviour
         afterImage.color = afterImageColor;
         Destroy(afterImage.gameObject, afterImageLifetime);
         afterImageCounter = afterImageTimeBetween;
+    }
+
+    private void BallMode()
+    {
+        float inputVertical = Input.GetAxisRaw("Vertical");
+
+        if ((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf))
+        {
+            ballModeCounter -= Time.deltaTime;
+            if (ballModeCounter < 0)
+            {
+                ballPlayer.SetActive(!ballPlayer.activeSelf);
+                standingPlayer.SetActive(!standingPlayer.activeSelf);
+
+            }
+        }
+        else
+            ballModeCounter = waitForBallMode;
     }
 }
