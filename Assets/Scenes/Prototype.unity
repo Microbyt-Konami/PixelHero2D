@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f5e352410ec0c74397dbe4f85eccf4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: 60
+  target: 30
 --- !u!1 &528607078
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,13 +403,13 @@ MonoBehaviour:
   arrowController: {fileID: 4502484709914368444, guid: a239884ec6a755a82a6362b2f164e559, type: 3}
   dustJump: {fileID: 1983506536206799902, guid: 3c250e46948a5a7479bd2014f0b66b0f, type: 3}
   dashSpeed: 18
-  dashTime: 0.3
+  dashTime: 0.2
+  waitForDust: 0.75
   playerSR: {fileID: 2049590579}
   afterImageSR: {fileID: 243634212143800494, guid: a8d79e2f46fae6e48a1df43ffe9c3390, type: 3}
-  afterImageLifetime: 0.3
+  afterImageLifetime: 0.2
   afterImageColor: {r: 0.3764706, g: 0.76862746, b: 0.6901961, a: 0.6666667}
-  afterImageTimeBetween: 0.008333334
-  afterImageCounter: 0
+  afterImageTimeBetween: 0.01666667
 --- !u!1 &1680783305
 GameObject:
   m_ObjectHideFlags: 0

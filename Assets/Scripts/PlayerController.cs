@@ -16,16 +16,18 @@ public class PlayerController : MonoBehaviour
     [Header("Player Dash")]
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTime;
+    [SerializeField] private float waitForDust;
     [Header("Player Dash After Image")]
     [SerializeField] private SpriteRenderer playerSR;
     [SerializeField] private SpriteRenderer afterImageSR;
     [SerializeField] private float afterImageLifetime;
     [SerializeField] private Color afterImageColor;
     [SerializeField] private float afterImageTimeBetween;
-    [SerializeField] private float afterImageCounter;
 
     // Variables
     private float dashCounter;
+    private float afterImageCounter;
+    private float afterDashCounter;
 
     // Compoments
     private Rigidbody2D playerRB;
@@ -67,10 +69,16 @@ public class PlayerController : MonoBehaviour
 
     private void Dash()
     {
-        if (Input.GetButtonDown("Fire2"))
+        if (afterDashCounter > 0)
+            afterDashCounter -= Time.deltaTime;
+        else
         {
-            dashCounter = dashTime;
-            ShowAfterImage();
+            if (Input.GetButtonDown("Fire2"))
+            {
+                dashCounter = dashTime;
+                ShowAfterImage();
+            }
+
         }
 
         if (dashCounter > 0)
@@ -80,6 +88,7 @@ public class PlayerController : MonoBehaviour
             afterImageCounter -= Time.deltaTime;
             if (afterImageCounter <= 0)
                 ShowAfterImage();
+            afterDashCounter = waitForDust;
         }
         else
             Move();
