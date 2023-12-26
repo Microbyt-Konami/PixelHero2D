@@ -5,31 +5,45 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Player Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask selectLayerMask;
+    [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
+    [Header("Player Dust")]
     [SerializeField] private GameObject dustJump;
+    [Header("Player Dash")]
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private float dashTime;
+    [SerializeField] private float waitForDust;
+    [Header("Player Dash After Image")]
+    [SerializeField] private SpriteRenderer playerSR;
+    [SerializeField] private SpriteRenderer afterImageSR;
+    [SerializeField] private float afterImageLifetime;
+    [SerializeField] private Color afterImageColor;
+    [SerializeField] private float afterImageTimeBetween;
 
+    // Variables
+    private float dashCounter;
+    private float afterImageCounter;
+    private float afterDashCounter;
+
+    // Compoments
     private Rigidbody2D playerRB;
     private Animator animator;
-    private Transform checkGroundPoint;
-    private Transform transformArrowPoint;
-    private Transform transformDustPoint;
+    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayer;
 
-    private bool isGrounded;
-    private bool isFlipedInX;
-    private bool isIdle;
-    private bool canDoubleJump;
+    // Flags
+    private bool isGrounded, isFlipedInX, isIdle, canDoubleJump;
 
-    private int idSpeed;
-    private int idIsGrounded;
-    private int idShootArrow;
-    private int idCanDoubleJump;
+    // Id Parameters Animator
+    private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
 
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
+        transformPlayer = GetComponent<Transform>();
     }
 
     private void Start()
@@ -46,11 +60,38 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        Move();
+        Dash();
         Jump();
         CheckAndSetDirection();
         ShootArrow();
         PlayDust();
+    }
+
+    private void Dash()
+    {
+        if (afterDashCounter > 0)
+            afterDashCounter -= Time.deltaTime;
+        else
+        {
+            if (Input.GetButtonDown("Fire2"))
+            {
+                dashCounter = dashTime;
+                ShowAfterImage();
+            }
+
+        }
+
+        if (dashCounter > 0)
+        {
+            dashCounter -= Time.deltaTime;
+            playerRB.velocity = new Vector2(dashSpeed * transformPlayer.localScale.x, playerRB.velocity.y);
+            afterImageCounter -= Time.deltaTime;
+            if (afterImageCounter <= 0)
+                ShowAfterImage();
+            afterDashCounter = waitForDust;
+        }
+        else
+            Move();
     }
 
     private void ShootArrow()
@@ -124,5 +165,16 @@ public class PlayerController : MonoBehaviour
         }
         if (playerRB.velocity.x == 0)
             isIdle = true;
+    }
+
+    private void ShowAfterImage()
+    {
+        SpriteRenderer afterImage = Instantiate(afterImageSR, transformPlayer.position, transformPlayer.rotation);
+
+        afterImage.sprite = playerSR.sprite;
+        afterImage.transform.localScale = transformPlayer.localScale;
+        afterImage.color = afterImageColor;
+        Destroy(afterImage.gameObject, afterImageLifetime);
+        afterImageCounter = afterImageTimeBetween;
     }
 }
