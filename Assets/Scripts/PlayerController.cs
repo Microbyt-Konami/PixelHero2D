@@ -9,8 +9,10 @@ public class PlayerController : MonoBehaviour
     [Header("Player Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private LayerMask selectLayerMask;
     [SerializeField] private float waitForBallMode;
+    [SerializeField] private float isGroundedRange = 0.2f;
+    [SerializeField] private LayerMask selectLayerMask;
+    [SerializeField] private Transform checkGroundPoint;
     [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
     [SerializeField] private GameObject prefabBomb;
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRB;
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
-    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
+    private Transform transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
     private PlayerExtrasTracker playerExtrasTracker;
 
     // Player Sprites
@@ -81,6 +83,11 @@ public class PlayerController : MonoBehaviour
         Shoot();
         PlayDust();
         BallMode();
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(checkGroundPoint.position, isGroundedRange);
     }
 
     private void Dash()
@@ -145,7 +152,9 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, 0.2f, selectLayerMask);
+        // Se puede resolver por OverlapCircle o por Raycast
+        //isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, isGroundedRange, selectLayerMask);
+        isGrounded = Physics2D.Raycast(checkGroundPoint.position, Vector2.down, isGroundedRange, selectLayerMask);
         if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         {
             if (isGrounded)
