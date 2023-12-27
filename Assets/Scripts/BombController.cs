@@ -10,10 +10,10 @@ public class BombController : MonoBehaviour
     [SerializeField] private float waitForDestroy;
     [SerializeField] private float expansiveWaveRange;
     [SerializeField] private LayerMask isDestroyable;
+    [SerializeField] private Transform transformBomb;
 
     // Compoments
     private Animator animator;
-    private Transform transformBomb;
 
     // Flags
     private bool isActive;
@@ -36,6 +36,11 @@ public class BombController : MonoBehaviour
             ActivatedBomb();
         if (waitForDestroy <= 0)
             Destroy(gameObject);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(transformBomb.position, expansiveWaveRange);
     }
 
     private void ActivatedBomb()

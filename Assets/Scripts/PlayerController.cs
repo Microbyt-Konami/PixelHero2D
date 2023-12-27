@@ -9,8 +9,10 @@ public class PlayerController : MonoBehaviour
     [Header("Player Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private LayerMask selectLayerMask;
     [SerializeField] private float waitForBallMode;
+    [SerializeField] private float isGroundedRange = 0.2f;
+    [SerializeField] private LayerMask selectLayerMask;
+    [SerializeField] private Transform checkGroundPoint;
     [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
     [SerializeField] private GameObject prefabBomb;
@@ -37,7 +39,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRB;
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
-    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
+    private Transform transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
+    private PlayerExtrasTracker playerExtrasTracker;
 
     // Player Sprites
     private GameObject standingPlayer;
@@ -52,6 +55,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRB = GetComponent<Rigidbody2D>();
         transformPlayerController = GetComponent<Transform>();
+        playerExtrasTracker = GetComponent<PlayerExtrasTracker>();
     }
 
     private void Start()
@@ -81,13 +85,18 @@ public class PlayerController : MonoBehaviour
         BallMode();
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(checkGroundPoint.position, isGroundedRange);
+    }
+
     private void Dash()
     {
         if (afterDashCounter > 0)
             afterDashCounter -= Time.deltaTime;
         else
         {
-            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf)
+            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf && playerExtrasTracker.CanDash)
             {
                 dashCounter = dashTime;
                 ShowAfterImage();
@@ -125,7 +134,7 @@ public class PlayerController : MonoBehaviour
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
 
-        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf)
+        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
             Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
@@ -143,8 +152,10 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, 0.2f, selectLayerMask);
-        if (Input.GetButtonDown("Jump") && (isGrounded || canDoubleJump))
+        // Se puede resolver por OverlapCircle o por Raycast
+        //isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, isGroundedRange, selectLayerMask);
+        isGrounded = Physics2D.Raycast(checkGroundPoint.position, Vector2.down, isGroundedRange, selectLayerMask);
+        if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         {
             if (isGrounded)
             {
@@ -202,7 +213,7 @@ public class PlayerController : MonoBehaviour
     {
         float inputVertical = Input.GetAxisRaw("Vertical");
 
-        if ((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf))
+        if (((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf)) && playerExtrasTracker.CanEnterBallMode)
         {
             ballModeCounter -= Time.deltaTime;
             if (ballModeCounter < 0)
