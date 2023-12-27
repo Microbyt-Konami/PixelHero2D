@@ -33,7 +33,8 @@ public class PlayerController : MonoBehaviour
 
     // Compoments
     private Rigidbody2D playerRB;
-    private Animator animator;
+    private Animator animatorStandingPlayer;
+    private Animator animatorBallPlayer;
     private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayer;
 
     // Player Sprites
@@ -59,7 +60,8 @@ public class PlayerController : MonoBehaviour
         checkGroundPoint = GameObject.Find("CheckGroundPoint").GetComponent<Transform>();
         transformArrowPoint = GameObject.Find("ArrowPoint").GetComponent<Transform>();
         transformDustPoint = GameObject.Find("DustPoint").GetComponent<Transform>();
-        animator = GameObject.Find("StandingPlayer").GetComponent<Animator>();
+        animatorStandingPlayer = standingPlayer.GetComponent<Animator>();
+        animatorBallPlayer = ballPlayer.GetComponent<Animator>();
         idSpeed = Animator.StringToHash("speed");
         idIsGrounded = Animator.StringToHash("isGrounded");
         idShootArrow = Animator.StringToHash("shootArrow");
@@ -117,7 +119,7 @@ public class PlayerController : MonoBehaviour
             else
                 tempArrowController.ArrowDirection = new Vector2(1, 0);
 
-            animator.SetTrigger(idShootArrow);
+            animatorStandingPlayer.SetTrigger(idShootArrow);
         }
     }
 
@@ -127,7 +129,10 @@ public class PlayerController : MonoBehaviour
         float inputX = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
         playerRB.velocity = new Vector2(inputX, playerRB.velocity.y);
-        animator.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
+        if (standingPlayer.activeSelf)
+            animatorStandingPlayer.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
+        else if (ballPlayer.activeSelf)
+            animatorBallPlayer.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
     }
 
     private void Jump()
@@ -143,11 +148,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 canDoubleJump = false;
-                animator.SetTrigger(idCanDoubleJump);
+                animatorStandingPlayer.SetTrigger(idCanDoubleJump);
             }
             playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
         }
-        animator.SetBool(idIsGrounded, isGrounded);
+        animatorStandingPlayer.SetBool(idIsGrounded, isGrounded);
     }
 
     private void CheckAndSetDirection()
