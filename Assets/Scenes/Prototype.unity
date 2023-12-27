@@ -350,6 +350,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: 30
+--- !u!1001 &519593809
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.51
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 7.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 204669237964690986, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2818259588173726651, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
+      propertyPath: m_Name
+      value: UnlockExtraDoubleJump
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 83f56d857aca11141a8a9e10b1964a90, type: 3}
 --- !u!1 &528607078
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,7 +576,7 @@ GameObject:
   - component: {fileID: 940632145}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -615,8 +672,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canDoubleJump: 0
   _canDash: 0
-  _CanEnterBallMode: 0
-  _CanDropBombs: 0
+  _canEnterBallMode: 0
+  _canDropBombs: 0
 --- !u!1 &1138026212
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,7 +719,7 @@ GameObject:
   - component: {fileID: 1443081086}
   m_Layer: 8
   m_Name: BallPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16653,7 +16710,7 @@ GameObject:
   - component: {fileID: 2049590580}
   m_Layer: 0
   m_Name: StandingPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16948,3 +17005,4 @@ SceneRoots:
   - {fileID: 940632143}
   - {fileID: 1774898317}
   - {fileID: 2122084980}
+  - {fileID: 519593809}
