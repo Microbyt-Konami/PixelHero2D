@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
             afterDashCounter -= Time.deltaTime;
         else
         {
-            if (Input.GetButtonDown("Fire2"))
+            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf)
             {
                 dashCounter = dashTime;
                 ShowAfterImage();
@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
 
     private void ShootArrow()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
         {
             ArrowController tempArrowController = Instantiate(arrowController, transformArrowPoint.position, transformArrowPoint.rotation);
 

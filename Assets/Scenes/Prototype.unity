@@ -423,6 +423,7 @@ GameObject:
   - component: {fileID: 1443081083}
   - component: {fileID: 1443081085}
   - component: {fileID: 1443081084}
+  - component: {fileID: 1443081086}
   m_Layer: 8
   m_Name: BallPlayer
   m_TagString: Untagged
@@ -454,7 +455,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 1443081082}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 33fb1eb19dc41984595de137e31e4a31, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -532,6 +533,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &1443081086
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443081082}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ee17899ae1d54984c97fe51c2540c2c3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1680783305
 GameObject:
   m_ObjectHideFlags: 0
