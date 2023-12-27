@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
     private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
+    private PlayerExtrasTracker playerExtrasTracker;
 
     // Player Sprites
     private GameObject standingPlayer;
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRB = GetComponent<Rigidbody2D>();
         transformPlayerController = GetComponent<Transform>();
+        playerExtrasTracker = GetComponent<PlayerExtrasTracker>();
     }
 
     private void Start()
@@ -87,7 +89,7 @@ public class PlayerController : MonoBehaviour
             afterDashCounter -= Time.deltaTime;
         else
         {
-            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf)
+            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf && playerExtrasTracker.CanDash)
             {
                 dashCounter = dashTime;
                 ShowAfterImage();
@@ -125,7 +127,7 @@ public class PlayerController : MonoBehaviour
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
 
-        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf)
+        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
             Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
@@ -144,7 +146,7 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, 0.2f, selectLayerMask);
-        if (Input.GetButtonDown("Jump") && (isGrounded || canDoubleJump))
+        if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         {
             if (isGrounded)
             {
@@ -202,7 +204,7 @@ public class PlayerController : MonoBehaviour
     {
         float inputVertical = Input.GetAxisRaw("Vertical");
 
-        if ((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf))
+        if (((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf)) && playerExtrasTracker.CanEnterBallMode)
         {
             ballModeCounter -= Time.deltaTime;
             if (ballModeCounter < 0)
