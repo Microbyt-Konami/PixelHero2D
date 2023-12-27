@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRB;
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
-    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayer;
+    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayerController;
 
     // Player Sprites
     private GameObject standingPlayer;
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
-        transformPlayer = GetComponent<Transform>();
+        transformPlayerController = GetComponent<Transform>();
     }
 
     private void Start()
@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
         if (dashCounter > 0)
         {
             dashCounter -= Time.deltaTime;
-            playerRB.velocity = new Vector2(dashSpeed * transformPlayer.localScale.x, playerRB.velocity.y);
+            playerRB.velocity = new Vector2(dashSpeed * transformPlayerController.localScale.x, playerRB.velocity.y);
             afterImageCounter -= Time.deltaTime;
             if (afterImageCounter <= 0)
                 ShowAfterImage();
@@ -183,10 +183,10 @@ public class PlayerController : MonoBehaviour
 
     private void ShowAfterImage()
     {
-        SpriteRenderer afterImage = Instantiate(afterImageSR, transformPlayer.position, transformPlayer.rotation);
+        SpriteRenderer afterImage = Instantiate(afterImageSR, transformPlayerController.position, transformPlayerController.rotation);
 
         afterImage.sprite = playerSR.sprite;
-        afterImage.transform.localScale = transformPlayer.localScale;
+        afterImage.transform.localScale = transformPlayerController.localScale;
         afterImage.color = afterImageColor;
         Destroy(afterImage.gameObject, afterImageLifetime);
         afterImageCounter = afterImageTimeBetween;
