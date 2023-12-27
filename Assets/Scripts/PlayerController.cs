@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    // Fields
     [Header("Player Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask selectLayerMask;
+    [SerializeField] private float waitForBallMode;
     [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
+    [SerializeField] private GameObject prefabBomb;
     [Header("Player Dust")]
     [SerializeField] private GameObject dustJump;
     [Header("Player Dash")]
@@ -28,30 +31,40 @@ public class PlayerController : MonoBehaviour
     private float dashCounter;
     private float afterImageCounter;
     private float afterDashCounter;
+    private float ballModeCounter;
 
     // Compoments
     private Rigidbody2D playerRB;
-    private Animator animator;
-    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayer;
+    private Animator animatorStandingPlayer;
+    private Animator animatorBallPlayer;
+    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
+
+    // Player Sprites
+    private GameObject standingPlayer;
+    private GameObject ballPlayer;
 
     // Flags
     private bool isGrounded, isFlipedInX, isIdle, canDoubleJump;
 
     // Id Parameters Animator
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
-
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
-        transformPlayer = GetComponent<Transform>();
+        transformPlayerController = GetComponent<Transform>();
     }
 
     private void Start()
     {
+        standingPlayer = GameObject.Find("StandingPlayer");
+        ballPlayer = GameObject.Find("BallPlayer");
+        ballPlayer.SetActive(false);
         checkGroundPoint = GameObject.Find("CheckGroundPoint").GetComponent<Transform>();
         transformArrowPoint = GameObject.Find("ArrowPoint").GetComponent<Transform>();
         transformDustPoint = GameObject.Find("DustPoint").GetComponent<Transform>();
-        animator = GameObject.Find("StandingPlayer").GetComponent<Animator>();
+        transformBombPoint = GameObject.Find("BombPoint").GetComponent<Transform>();
+        animatorStandingPlayer = standingPlayer.GetComponent<Animator>();
+        animatorBallPlayer = ballPlayer.GetComponent<Animator>();
         idSpeed = Animator.StringToHash("speed");
         idIsGrounded = Animator.StringToHash("isGrounded");
         idShootArrow = Animator.StringToHash("shootArrow");
@@ -63,8 +76,9 @@ public class PlayerController : MonoBehaviour
         Dash();
         Jump();
         CheckAndSetDirection();
-        ShootArrow();
+        Shoot();
         PlayDust();
+        BallMode();
     }
 
     private void Dash()
@@ -73,7 +87,7 @@ public class PlayerController : MonoBehaviour
             afterDashCounter -= Time.deltaTime;
         else
         {
-            if (Input.GetButtonDown("Fire2"))
+            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf)
             {
                 dashCounter = dashTime;
                 ShowAfterImage();
@@ -84,7 +98,7 @@ public class PlayerController : MonoBehaviour
         if (dashCounter > 0)
         {
             dashCounter -= Time.deltaTime;
-            playerRB.velocity = new Vector2(dashSpeed * transformPlayer.localScale.x, playerRB.velocity.y);
+            playerRB.velocity = new Vector2(dashSpeed * transformPlayerController.localScale.x, playerRB.velocity.y);
             afterImageCounter -= Time.deltaTime;
             if (afterImageCounter <= 0)
                 ShowAfterImage();
@@ -94,9 +108,9 @@ public class PlayerController : MonoBehaviour
             Move();
     }
 
-    private void ShootArrow()
+    private void Shoot()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
         {
             ArrowController tempArrowController = Instantiate(arrowController, transformArrowPoint.position, transformArrowPoint.rotation);
 
@@ -108,8 +122,11 @@ public class PlayerController : MonoBehaviour
             else
                 tempArrowController.ArrowDirection = new Vector2(1, 0);
 
-            animator.SetTrigger(idShootArrow);
+            animatorStandingPlayer.SetTrigger(idShootArrow);
         }
+
+        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf)
+            Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
     private void Move()
@@ -118,7 +135,10 @@ public class PlayerController : MonoBehaviour
         float inputX = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
         playerRB.velocity = new Vector2(inputX, playerRB.velocity.y);
-        animator.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
+        if (standingPlayer.activeSelf)
+            animatorStandingPlayer.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
+        else if (ballPlayer.activeSelf)
+            animatorBallPlayer.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
     }
 
     private void Jump()
@@ -134,11 +154,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 canDoubleJump = false;
-                animator.SetTrigger(idCanDoubleJump);
+                animatorStandingPlayer.SetTrigger(idCanDoubleJump);
             }
             playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
         }
-        animator.SetBool(idIsGrounded, isGrounded);
+        animatorStandingPlayer.SetBool(idIsGrounded, isGrounded);
     }
 
     private void CheckAndSetDirection()
@@ -169,12 +189,30 @@ public class PlayerController : MonoBehaviour
 
     private void ShowAfterImage()
     {
-        SpriteRenderer afterImage = Instantiate(afterImageSR, transformPlayer.position, transformPlayer.rotation);
+        SpriteRenderer afterImage = Instantiate(afterImageSR, transformPlayerController.position, transformPlayerController.rotation);
 
         afterImage.sprite = playerSR.sprite;
-        afterImage.transform.localScale = transformPlayer.localScale;
+        afterImage.transform.localScale = transformPlayerController.localScale;
         afterImage.color = afterImageColor;
         Destroy(afterImage.gameObject, afterImageLifetime);
         afterImageCounter = afterImageTimeBetween;
+    }
+
+    private void BallMode()
+    {
+        float inputVertical = Input.GetAxisRaw("Vertical");
+
+        if ((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf))
+        {
+            ballModeCounter -= Time.deltaTime;
+            if (ballModeCounter < 0)
+            {
+                ballPlayer.SetActive(!ballPlayer.activeSelf);
+                standingPlayer.SetActive(!standingPlayer.activeSelf);
+
+            }
+        }
+        else
+            ballModeCounter = waitForBallMode;
     }
 }
