@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float waitForBallMode;
     [Header("Player Shoot")]
     [SerializeField] private ArrowController arrowController;
+    [SerializeField] private GameObject prefabBomb;
     [Header("Player Dust")]
     [SerializeField] private GameObject dustJump;
     [Header("Player Dash")]
@@ -35,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRB;
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
-    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformPlayerController;
+    private Transform checkGroundPoint, transformArrowPoint, transformDustPoint, transformBombPoint, transformPlayerController;
 
     // Player Sprites
     private GameObject standingPlayer;
@@ -60,6 +61,7 @@ public class PlayerController : MonoBehaviour
         checkGroundPoint = GameObject.Find("CheckGroundPoint").GetComponent<Transform>();
         transformArrowPoint = GameObject.Find("ArrowPoint").GetComponent<Transform>();
         transformDustPoint = GameObject.Find("DustPoint").GetComponent<Transform>();
+        transformBombPoint = GameObject.Find("BombPoint").GetComponent<Transform>();
         animatorStandingPlayer = standingPlayer.GetComponent<Animator>();
         animatorBallPlayer = ballPlayer.GetComponent<Animator>();
         idSpeed = Animator.StringToHash("speed");
@@ -73,7 +75,7 @@ public class PlayerController : MonoBehaviour
         Dash();
         Jump();
         CheckAndSetDirection();
-        ShootArrow();
+        Shoot();
         PlayDust();
         BallMode();
     }
@@ -105,7 +107,7 @@ public class PlayerController : MonoBehaviour
             Move();
     }
 
-    private void ShootArrow()
+    private void Shoot()
     {
         if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
         {
@@ -121,6 +123,9 @@ public class PlayerController : MonoBehaviour
 
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
+
+        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf)
+            Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
     private void Move()
