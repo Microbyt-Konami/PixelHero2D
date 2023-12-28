@@ -35,8 +35,10 @@ public class ItemController : MonoBehaviour
 
     private IEnumerator CatchIt()
     {
+        if (!itemsManager.CatchIt(this))
+            yield break;
+
         isHiding = true;
-        itemsManager.CatchIt(this);
 
         var position = transformItem.position;
         var color = sr.color;

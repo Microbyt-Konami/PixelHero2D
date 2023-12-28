@@ -31,10 +31,10 @@ public class ItemsManager : MonoBehaviour
         }
     }
 
-    public void CatchIt(ItemController controller)
+    public bool CatchIt(ItemController controller)
     {
         if (!items.TryGetValue(controller.tag, out var item))
-            return;
+            return false;
 
         if (orderCurrent == item.OrderToUnlock)
         {
@@ -50,8 +50,11 @@ public class ItemsManager : MonoBehaviour
                     playerExtrasTracker.CanEnterBallMode = true;
                 if (item.CanDropBombs)
                     playerExtrasTracker.CanDropBombs = true;
-
             }
+
+            return true;
         }
+
+        return false;
     }
 }
