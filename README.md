@@ -2,7 +2,7 @@
 
 PixelHero2D game 2d make in unity3d
 
-<a href='https://www.microbykonamic.es/testsgame/webgl/PixelHero2D'>Click aqui para jugar con el prototipo</a>
+<a href='https://www.microbykonamic.es/testsgame/webgl/PixelHero2D' target='_blank'>Click aqui para jugar con el prototipo</a>
 
 <h3>Sistema de desbloqueo de EXTRAS</h3>
 
