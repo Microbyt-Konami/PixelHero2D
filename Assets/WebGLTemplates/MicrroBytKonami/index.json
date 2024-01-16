@@ -1,9 +1,9 @@
 {
 #if SHOW_DIAGNOSTICS
-	"ShowDiagnostics": true,
+	"showDiagnostics": true,
 #endif
 #if BACKGROUND_FILENAME
-	"BackGroundFilename": true,
+	"backGroundFilename": true,
 #endif
 	"width": {{{ WIDTH }}},
 	"height": {{{ HEIGHT }}},
