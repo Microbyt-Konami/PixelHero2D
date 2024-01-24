@@ -1,9 +1,10 @@
-# PixelHero2D
+<h1>PixelHero2D</h1>
 
-PixelHero2D game 2d make in unity3d
+<h3>
+	<p>PixelHero2D es un prototipo de juego 2d hecho en unity3d. Es un juego de plataforma donde tiene que coger monedas para desbloquear extras y tener cuidado con los enemigos. El juego puede lanzar flechas para destruir enemigos</p>
 
 <a href='https://www.microbykonamic.es/testsgame/webgl/PixelHero2D' target='_blank'>Click aqui para jugar con el prototipo</a>
-
+</h3>
 <h3>Sistema de desbloqueo de EXTRAS</h3>
 
 <ul
@@ -32,4 +33,4 @@ PixelHero2D game 2d make in unity3d
 	<li>Enemigo de tipo Bat</li>
 	<li>Los enemigos sólo se destruyen cuando los toca una flecha.</li>
 	<li>Si un enemigo toca al Player se reinicia el nivel junto con todo el conteo de ítems recogidos en la escena. </li>
-</ul>
+</ul></p>
