@@ -36,9 +36,9 @@ public class ItemsManager : MonoBehaviour
         if (!items.TryGetValue(controller.tag, out var item))
             return false;
 
+        item.CatchIt();
         if (orderCurrent == item.OrderToUnlock)
         {
-            item.CatchIt();
             if (item.ItemsPendingToUnlock == 0)
             {
                 orderCurrent++;
@@ -51,10 +51,8 @@ public class ItemsManager : MonoBehaviour
                 if (item.CanDropBombs)
                     playerExtrasTracker.CanDropBombs = true;
             }
-
-            return true;
         }
 
-        return false;
+        return true;
     }
 }
