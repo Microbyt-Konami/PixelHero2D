@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Localization;
-using UnityEngine.Localization.Settings;
 
 public class UIManager : MonoBehaviour
 {
@@ -32,7 +30,7 @@ public class UIManager : MonoBehaviour
     {
         GUILayout.BeginVertical();
         foreach (var item in itemsManager.Items)
-            GUILayout.Label($"{typeItemsTexts.GetValueOrDefault(item.tag, item.tag)}: {item.ItemsPendingToUnlock}", myStyle);
+            GUILayout.Label($"{item.tag}: {item.ItemsPendingToUnlock}", myStyle);
         GUILayout.EndVertical();
     }
 }
