@@ -1147,13 +1147,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: CoinShine (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 3724138179280340059, guid: 8435a3ba557bd3745bf4c79979868766, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4912283081308027546, guid: 8435a3ba557bd3745bf4c79979868766, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 445
+      value: 14.53
       objectReference: {fileID: 0}
     - target: {fileID: 4912283081308027546, guid: 8435a3ba557bd3745bf4c79979868766, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 191
+      value: 11.74
       objectReference: {fileID: 0}
     - target: {fileID: 4912283081308027546, guid: 8435a3ba557bd3745bf4c79979868766, type: 3}
       propertyPath: m_LocalPosition.z
