@@ -45,11 +45,14 @@
 	</li>
 	<li>
 		<h2>Modo Bola, Bombas y explosión con destrucción de cajas</h2>
-	</li><li>
-		<h2></h2>
-	</li><li>
-		<h2></h2>
-	</li><li>
-		<h2></h2>
+	</li>
+	<li>
+		<h2>Modo dash</h2>
+	</li>
+	<li>
+		<h2>Pickups de monedas y corazones</h2>
+	</li>
+	<li>
+		<h2>Flechas</h2>
 	</li>
 </ul>
