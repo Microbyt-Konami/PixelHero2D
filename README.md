@@ -1,36 +1,55 @@
 <h1>PixelHero2D</h1>
 
 <h3>
-	<p>PixelHero2D es un prototipo de juego 2d hecho en unity3d. Es un juego de plataforma donde tiene que coger monedas para desbloquear extras y tener cuidado con los enemigos. El juego puede lanzar flechas para destruir enemigos</p>
-
-<a href='https://www.microbykonamic.es/testsgame/webgl/PixelHero2D' target='_blank'>Click aqui para jugar con el prototipo</a>
+	<p>PixelHero2D es un prototipo de juego 2d hecho en unity3d. Es un juego de plataforma donde tiene que coger monedas para desbloquear extras y tener cuidado con los enemigos que si los tocas se reinicia el juego.</p>
+	<p>El jugador puede lanzar flechas o bombas para destruir enemigos</p>
+ 	<p>Los extras se desbloquear en este orden:</p>
+	<ul>
+		<li>1 - Double Jump - 5 铆tems de Coraz贸n brillando</li>
+		<li>2 - Dash - 6 铆tems de Moneda girando</li>
+		<li>3 - Ball Mode y Drop Bombs. - 10 铆tems de Moneda brillando</li>
+	</ul>
+	<a href='https://www.microbykonamic.es/testsgame/webgl/PixelHero2D' target='_blank'>Click aqui para jugar con el prototipo</a>
 </h3>
 <h3>Sistema de desbloqueo de EXTRAS</h3>
 
-<ul
+<h2><b>Animaciones</b></h2>
+<ul>
+	<li>Player_Idle</li>
+	<li>Player_Run</li>
+	<li>Player_Jump</li>
+	<li>Player_DoubleJump</li>
+	<li>Player_ShootArrow</li>
+	<li>Player_Ball_Idle</li>
+	<li>Player_Ball_Move</li>
+	<li>Player_Arrow_Flying</li>
+	<li>Bomb_Active</li>
+	<li>Bomb_Explotion</li>
+	<li>Bat_Idle</li>
+</ul>
+<h2><b>Recogidas</b></h2>
+<ul>
+	<li>Moneda brillando&nbsp;</li>
+	<li>Moneda girando&nbsp;</li>
+	<li>Coraz贸n brillando</li>
+</ul>
+<h2><b>Ataques</b></h2>
+<ul>
+	<li>Flechas</li>
+	<li>Bombas</li>
+</ul>
+<h1>Previo del Juego</h1>
+<ul>
 	<li>
-		Los 3 tipos de 韙ems:&nbsp;
-		<ul>
-			<li>Moneda brillando&nbsp;</li>
-			<li>Moneda girando&nbsp;</li>
-			<li>Coraz髇 brillando</li>
-		</ul>
+		<h2>Salto y Doble salto</h2>
 	</li>
-	<br>
 	<li>
-		Los extras se desbloquear en orden:
-		<ul>
-			<li>1 - Double Jump - 5 韙ems de Coraz髇 brillando</li>
-			<li>2 - Dash - 6 韙ems de Moneda girando</li>
-			<li>3 - Ball Mode y Drop Bombs. - 10 韙ems de Moneda brillando</li>
-		</ul>
+		<h2>Modo Bola, Bombas y explosi贸n con destrucci贸n de cajas</h2>
+	</li><li>
+		<h2></h2>
+	</li><li>
+		<h2></h2>
+	</li><li>
+		<h2></h2>
 	</li>
 </ul>
-
-<h3>Sistema Enemigos y Flechas</h3>
-
-<ul>
-	<li>Enemigo de tipo Bat</li>
-	<li>Los enemigos s髄o se destruyen cuando los toca una flecha.</li>
-	<li>Si un enemigo toca al Player se reinicia el nivel junto con todo el conteo de 韙ems recogidos en la escena. </li>
-</ul></p>
