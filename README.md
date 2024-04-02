@@ -35,25 +35,10 @@
 
 ![pixelhero_salto](https://github.com/Microbyt-Konami/PixelHero2D/assets/11694147/d5b52d52-b084-4d09-a89e-2044e051d1bf)
 
+- Modo Bola, Bombas y explosión con destrucción de cajas
 
-- Prueba2
-- d
-- 
-<ul>
-	<li>
-		<h2>Salto y Doble salto</h2>		
-	</li>
-	<li>
-		<h2>Modo Bola, Bombas y explosión con destrucción de cajas</h2>
-	</li>
-	<li>
-		<h2>Modo dash</h2>
-	</li>
-	<li>
-		<h2>Pickups de monedas y corazones</h2>
-	</li>
-	<li>
-		<h2>Flechas</h2>
-	</li>
-</ul>
-
+![pixelhero_bola](https://github.com/Microbyt-Konami/PixelHero2D/assets/11694147/43aeb519-02ef-4174-ae51-ea6467dfd2d3)
+  
+- Modo dash
+- Pickups de monedas y corazones
+- Flechas
