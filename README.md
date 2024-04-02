@@ -42,6 +42,7 @@
 <ul>
 	<li>
 		<h2>Salto y Doble salto</h2>
+		![pixelhero1](https://github.com/Microbyt-Konami/PixelHero2D/assets/11694147/dd1703f9-50be-4f50-aefa-457d278bd6dc)
 	</li>
 	<li>
 		<h2>Modo Bola, Bombas y explosión con destrucción de cajas</h2>
