@@ -9,7 +9,7 @@
 		<li>Dash - 6 ítems de Moneda girando</li>
 		<li>Ball Mode y Drop Bombs. - 10 ítems de Moneda brillando</li>
 	</ol>
-	<a href='https://www.microbykonamic.es/testsgame/webgl/PixelHero2D' target='_blank'>Click aqui para jugar con el prototipo</a>
+	<a href='https://bugbit.itch.io/pixel-hero' target='_blank'>Click aqui para jugar con el prototipo</a>
 </h3>
 <h3>Sistema de desbloqueo de EXTRAS</h3>
 
