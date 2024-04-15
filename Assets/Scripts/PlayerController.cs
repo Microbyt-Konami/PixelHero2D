@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Unity.Jobs;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ISerializable
 {
     // Fields
     [Header("Player Movement")]
@@ -30,6 +32,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float afterImageTimeBetween;
 
     // Variables
+    private Vector3 positionInitial;
     private float dashCounter;
     private float afterImageCounter;
     private float afterDashCounter;
@@ -51,6 +54,17 @@ public class PlayerController : MonoBehaviour
 
     // Id Parameters Animator
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
+
+    private class Prefs
+    {
+        public Vector3 positionInitial;
+
+        public Prefs(PlayerController playerController)
+        {
+            positionInitial = playerController.positionInitial;
+        }
+    }
+
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
@@ -73,8 +87,9 @@ public class PlayerController : MonoBehaviour
         idIsGrounded = Animator.StringToHash("isGrounded");
         idShootArrow = Animator.StringToHash("shootArrow");
         idCanDoubleJump = Animator.StringToHash("canDoubleJump");
+        positionInitial = transformPlayerController.position;
+        FindAnyObjectByType<SaveDataGame>().ObjectsToSerialize.Add(this);
     }
-
     void Update()
     {
         Dash();
@@ -226,4 +241,19 @@ public class PlayerController : MonoBehaviour
         else
             ballModeCounter = waitForBallMode;
     }
+
+    public JObject Serialize()
+    {
+        var prefs = new Prefs(this);
+        string jsonString = JsonUtility.ToJson(prefs);
+        JObject returnObject = JObject.Parse(jsonString);
+
+        return returnObject;
+    }
+
+    public void DeSerialized(string jsonString)
+    {
+    }
+
+    public string GetJsonKey() => "Player";
 }
