@@ -15,6 +15,12 @@ public class ItemController : MonoBehaviour
     // Variables
     private bool isHiding;
 
+    public void CatchItNoAnimation()
+    {
+        itemsManager.CatchIt(this);
+        Destroy(gameObject);
+    }
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -35,7 +41,7 @@ public class ItemController : MonoBehaviour
 
     private IEnumerator CatchIt()
     {
-        if (!itemsManager.CatchIt(this))
+        if (!itemsManager.CatchIt(this, true))
             yield break;
 
         isHiding = true;

@@ -12,16 +12,24 @@ public class SaveDataGame : MonoBehaviour
 
     public List<ISerializable> ObjectsToSerialize => _objectsToSerialize;
 
+    public void ResetData()
+    {
+        string filePath = Application.persistentDataPath + "/saveData.sdg";
+
+        if (File.Exists(filePath))
+            File.Delete(filePath);
+    }
+
     void Awake()
     {
         _objectsToSerialize = new List<ISerializable>();
     }
 
     // Start is called before the first frame update
-    // void Start()
-    // {
-
-    // }
+    void Start()
+    {
+        LoadData();
+    }
 
     // Update is called once per frame
     // void Update()
@@ -47,5 +55,29 @@ public class SaveDataGame : MonoBehaviour
 
         sw.WriteLine(jDataSave.ToString());
         sw.Close();
+    }
+
+    bool LoadData()
+    {
+        string filePath = Application.persistentDataPath + "/saveData.sdg";
+
+        if (!File.Exists(filePath))
+            return false;
+
+        StreamReader sr = new StreamReader(filePath);
+        string jsonString = sr.ReadToEnd();
+
+        sr.Close();
+
+        JObject jDataSave = JObject.Parse(jsonString);
+
+        foreach (var item in _objectsToSerialize)
+        {
+            string jsonItem = jDataSave[item.GetJsonKey()].ToString();
+
+            item.DeSerialized(jsonItem);
+        }
+
+        return true;
     }
 }

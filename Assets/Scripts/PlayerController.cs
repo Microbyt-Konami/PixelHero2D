@@ -57,11 +57,21 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private class Prefs
     {
-        public Vector3 positionInitial;
+        public Vector3 positionInitial, positionEnd;
+        public bool isFlipedInX;
 
         public Prefs(PlayerController playerController)
         {
             positionInitial = playerController.positionInitial;
+            positionEnd = playerController.transformPlayerController.position;
+            isFlipedInX = playerController.isFlipedInX;
+        }
+
+        public void Restore(PlayerController playerController)
+        {
+            playerController.positionInitial = positionInitial;
+            playerController.transformPlayerController.position = positionEnd;
+            playerController.SetUpFlipedInX(isFlipedInX);
         }
     }
 
@@ -187,6 +197,12 @@ public class PlayerController : MonoBehaviour, ISerializable
         animatorStandingPlayer.SetBool(idIsGrounded, isGrounded);
     }
 
+    private void SetUpFlipedInX(bool value)
+    {
+        transform.localScale = value ? new Vector3(-1, 1, 1) : Vector3.one;
+        isFlipedInX = value;
+    }
+
     private void CheckAndSetDirection()
     {
         if (playerRB.velocity.x < 0)
@@ -253,6 +269,9 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     public void DeSerialized(string jsonString)
     {
+        var prefs = JsonUtility.FromJson<Prefs>(jsonString);
+
+        prefs.Restore(this);
     }
 
     public string GetJsonKey() => "Player";
