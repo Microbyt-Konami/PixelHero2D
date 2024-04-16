@@ -11,9 +11,8 @@ public class ItemsManager : MonoBehaviour
     private PlayerExtrasTracker playerExtrasTracker;
     private Dictionary<string, ItemType> items = new Dictionary<string, ItemType>();
     private int orderCurrent = 1;
-    
-    
-    public List<string> GameObjectNamesItemsCatched {get;} = new List<string>();
+
+    public List<string> GameObjectNamesItemsCatched { get; } = new List<string>();
     public ICollection<ItemType> Items => items.Values;
 
     void Start()
