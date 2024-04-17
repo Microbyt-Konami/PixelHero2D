@@ -1,4 +1,4 @@
-<h1>PixelHero2D</h1>
+<h1>PixelHero 2D</h1>
 
 <h3>
 	<p>PixelHero2D es un prototipo de juego 2d hecho en unity3d. Es un juego de plataforma donde tiene que coger monedas para desbloquear extras y tener cuidado con los enemigos que si los tocas se reinicia el juego.</p>
