@@ -9,8 +9,10 @@ using UnityEngine.Scripting;
 public class SaveDataGame : MonoBehaviour
 {
     private List<ISerializable> _objectsToSerialize;
+    private List<string> itemsGOCatched = new List<string>();
 
     public List<ISerializable> ObjectsToSerialize => _objectsToSerialize;
+    public List<string> ItemsGOCatched => itemsGOCatched;
 
     public void ResetData()
     {
@@ -18,6 +20,7 @@ public class SaveDataGame : MonoBehaviour
 
         if (File.Exists(filePath))
             File.Delete(filePath);
+        itemsGOCatched.Clear();
     }
 
     void Awake()
@@ -28,7 +31,8 @@ public class SaveDataGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        LoadData();
+        if (!LoadData())
+            ResetData();
     }
 
     // Update is called once per frame
@@ -47,6 +51,7 @@ public class SaveDataGame : MonoBehaviour
         string filePath = Application.persistentDataPath + "/saveData.sdg";
         JObject jDataSave = new JObject();
 
+        jDataSave.Add("ItemsCatched", JArray.FromObject(itemsGOCatched));
         foreach (var item in _objectsToSerialize)
             jDataSave.Add(item.GetJsonKey(), item.Serialize());
 
@@ -70,6 +75,19 @@ public class SaveDataGame : MonoBehaviour
         sr.Close();
 
         JObject jDataSave = JObject.Parse(jsonString);
+        JArray itemsCatched = (JArray)jDataSave["ItemsCatched"];
+
+        if (itemsCatched == null || itemsCatched.Count == 0)
+            return false;
+
+        itemsGOCatched = itemsCatched.ToObject<List<string>>();
+        foreach (var item in itemsGOCatched)
+        {
+            var go = GameObject.Find(item);
+
+            if (go != null)
+                Destroy(go);
+        }
 
         foreach (var item in _objectsToSerialize)
         {
