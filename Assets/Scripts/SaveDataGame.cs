@@ -29,8 +29,10 @@ public class SaveDataGame : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
+        yield return new WaitForEndOfFrame();
+        // Asegurarse de que los objetos se ha cargado correctamente y por tanto todos los objetos que implementen ISerializable se han cargado
         if (!LoadData())
             ResetData();
     }
