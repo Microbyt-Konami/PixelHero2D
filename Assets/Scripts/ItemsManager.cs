@@ -1,16 +1,47 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
+using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
 
-public class ItemsManager : MonoBehaviour
+public class ItemsManager : MonoBehaviour, ISerializable
 {
     // Variables
     private PlayerExtrasTracker playerExtrasTracker;
     private Dictionary<string, ItemType> items = new Dictionary<string, ItemType>();
     private int orderCurrent = 1;
 
+    public List<string> GameObjectNamesItemsCatched { get; } = new List<string>();
     public ICollection<ItemType> Items => items.Values;
+
+    private class Prefs
+    {
+        public int CoinShineCatched;
+        public int CoinSpinCatched;
+        public int PickHeartCatched;
+
+        public Prefs(ItemsManager itemManager)
+        {
+            foreach (var item in itemManager.items)
+            {
+                if (item.Key == "CoinShine")
+                    CoinShineCatched = item.Value.ItemsCatched;
+                else if (item.Key == "CoinSpin")
+                    CoinSpinCatched = item.Value.ItemsCatched;
+                else if (item.Key == "PickHeart")
+                    PickHeartCatched = item.Value.ItemsCatched;
+            }
+        }
+
+        public void Restore(ItemsManager itemsManager)
+        {
+            itemsManager.items["CoinShine"].ItemsCatched = CoinShineCatched;
+            itemsManager.items["CoinSpin"].ItemsCatched = CoinSpinCatched;
+            itemsManager.items["PickHeart"].ItemsCatched = PickHeartCatched;
+        }
+    }
 
     void Start()
     {
@@ -29,6 +60,7 @@ public class ItemsManager : MonoBehaviour
             itemType.ResetItemsPendingToUnlock();
             items.Add(itemChild.tag, itemType);
         }
+        FindAnyObjectByType<SaveDataGame>().ObjectsToSerialize.Add(this);
     }
 
     public bool CatchIt(ItemController controller)
@@ -37,6 +69,7 @@ public class ItemsManager : MonoBehaviour
             return false;
 
         item.CatchIt();
+        GameObjectNamesItemsCatched.Add(controller.gameObject.name);
         if (orderCurrent == item.OrderToUnlock)
         {
             if (item.ItemsPendingToUnlock == 0)
@@ -55,4 +88,22 @@ public class ItemsManager : MonoBehaviour
 
         return true;
     }
+
+    public JObject Serialize()
+    {
+        var prefs = new Prefs(this);
+        string jsonString = JsonUtility.ToJson(prefs);
+        JObject returnObject = JObject.Parse(jsonString);
+
+        return returnObject;
+    }
+
+    public void DeSerialized(string jsonString)
+    {
+        var prefs = JsonUtility.FromJson<Prefs>(jsonString);
+
+        prefs.Restore(this);
+    }
+
+    public string GetJsonKey() => "Items";
 }
