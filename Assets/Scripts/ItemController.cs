@@ -11,6 +11,7 @@ public class ItemController : MonoBehaviour
     private SpriteRenderer sr;
     private Transform transformItem;
     private ItemsManager itemsManager;
+    private SaveDataGame saveDataGame;
 
     // Variables
     private bool isHiding;
@@ -25,6 +26,7 @@ public class ItemController : MonoBehaviour
     void Start()
     {
         itemsManager = FindAnyObjectByType<ItemsManager>();
+        saveDataGame = FindAnyObjectByType<SaveDataGame>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -38,6 +40,7 @@ public class ItemController : MonoBehaviour
         if (!itemsManager.CatchIt(this))
             yield break;
 
+        saveDataGame.ItemsGOCatched.Add(gameObject.name);
         isHiding = true;
 
         var position = transformItem.position;

@@ -16,6 +16,7 @@ public class ItemType : MonoBehaviour
 
     // Variables
     private int _itemsPendingToUnlock;
+    private int _itemsCatched;
 
     public int OrderToUnlock { get => orderToUnlock; }
     public int CountItemsToUnlock1 { get; set; }
@@ -26,13 +27,28 @@ public class ItemType : MonoBehaviour
 
     public int ItemsPendingToUnlock => _itemsPendingToUnlock;
 
+    public int ItemsCatched
+    {
+        get => _itemsCatched;
+        set
+        {
+            _itemsCatched = value;
+            if (_itemsCatched < countItemsToUnlock)
+                _itemsPendingToUnlock = countItemsToUnlock - _itemsCatched;
+            else
+                _itemsPendingToUnlock = 0;
+        }
+    }
+
     public void ResetItemsPendingToUnlock()
     {
         _itemsPendingToUnlock = countItemsToUnlock;
+        _itemsCatched = 0;
     }
 
     public void CatchIt()
     {
+        _itemsCatched++;
         if (_itemsPendingToUnlock > 0)
             _itemsPendingToUnlock--;
     }

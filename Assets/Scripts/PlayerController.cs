@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Unity.Jobs;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ISerializable
 {
     // Fields
     [Header("Player Movement")]
@@ -30,6 +32,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float afterImageTimeBetween;
 
     // Variables
+    private Vector3 positionInitial;
     private float dashCounter;
     private float afterImageCounter;
     private float afterDashCounter;
@@ -51,6 +54,27 @@ public class PlayerController : MonoBehaviour
 
     // Id Parameters Animator
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
+
+    private class Prefs
+    {
+        public Vector3 positionInitial, positionEnd;
+        public bool isFlipedInX;
+
+        public Prefs(PlayerController playerController)
+        {
+            positionInitial = playerController.positionInitial;
+            positionEnd = playerController.transformPlayerController.position;
+            isFlipedInX = playerController.isFlipedInX;
+        }
+
+        public void Restore(PlayerController playerController)
+        {
+            playerController.positionInitial = positionInitial;
+            playerController.transformPlayerController.position = positionEnd;
+            playerController.SetUpFlipedInX(isFlipedInX);
+        }
+    }
+
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody2D>();
@@ -73,8 +97,9 @@ public class PlayerController : MonoBehaviour
         idIsGrounded = Animator.StringToHash("isGrounded");
         idShootArrow = Animator.StringToHash("shootArrow");
         idCanDoubleJump = Animator.StringToHash("canDoubleJump");
+        positionInitial = transformPlayerController.position;
+        FindAnyObjectByType<SaveDataGame>().ObjectsToSerialize.Add(this);
     }
-
     void Update()
     {
         Dash();
@@ -172,6 +197,12 @@ public class PlayerController : MonoBehaviour
         animatorStandingPlayer.SetBool(idIsGrounded, isGrounded);
     }
 
+    private void SetUpFlipedInX(bool value)
+    {
+        transform.localScale = value ? new Vector3(-1, 1, 1) : Vector3.one;
+        isFlipedInX = value;
+    }
+
     private void CheckAndSetDirection()
     {
         if (playerRB.velocity.x < 0)
@@ -226,4 +257,22 @@ public class PlayerController : MonoBehaviour
         else
             ballModeCounter = waitForBallMode;
     }
+
+    public JObject Serialize()
+    {
+        var prefs = new Prefs(this);
+        string jsonString = JsonUtility.ToJson(prefs);
+        JObject returnObject = JObject.Parse(jsonString);
+
+        return returnObject;
+    }
+
+    public void DeSerialized(string jsonString)
+    {
+        var prefs = JsonUtility.FromJson<Prefs>(jsonString);
+
+        prefs.Restore(this);
+    }
+
+    public string GetJsonKey() => "Player";
 }
