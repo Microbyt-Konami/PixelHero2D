@@ -66,7 +66,18 @@ public class SaveDataGame : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         // Asegurarse de que los objetos se ha cargado correctamente y por tanto todos los objetos que implementen ISerializable se han cargado
-        if (!LoadData())
+
+        bool isLoadData;
+        try
+        {
+            isLoadData = LoadData();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            isLoadData = false;
+        }
+        if (!isLoadData)
             ResetData();
     }
 
@@ -90,11 +101,15 @@ public class SaveDataGame : MonoBehaviour
         foreach (var item in _objectsToSerialize)
             jDataSave.Add(item.GetJsonKey(), item.Serialize());
 
-        StreamWriter sw = new StreamWriter(filePath);
-        Debug.Log(filePath + "\n" + jDataSave);
+        //Debug.Log(filePath + "\n" + jDataSave);
+        Debug.Log(filePath);
 
-        sw.WriteLine(jDataSave.ToString());
-        sw.Close();
+        // StreamWriter sw = new StreamWriter(filePath);
+        // sw.WriteLine(jDataSave.ToString());
+        // sw.Close();
+
+        byte[] encryptedSaveGame = Encrypt(jDataSave.ToString());
+        File.WriteAllBytes(filePath, encryptedSaveGame);
     }
 
     bool LoadData()
@@ -104,10 +119,13 @@ public class SaveDataGame : MonoBehaviour
         if (!File.Exists(filePath))
             return false;
 
-        StreamReader sr = new StreamReader(filePath);
-        string jsonString = sr.ReadToEnd();
+        // StreamReader sr = new StreamReader(filePath);
+        // string jsonString = sr.ReadToEnd();
 
-        sr.Close();
+        // sr.Close();
+
+        byte[] decryptedSaveGame = File.ReadAllBytes(filePath);
+        string jsonString = Decrypt(decryptedSaveGame);
 
         JObject jDataSave = JObject.Parse(jsonString);
         JArray itemsCatched = (JArray)jDataSave["ItemsCatched"];
@@ -132,5 +150,38 @@ public class SaveDataGame : MonoBehaviour
         }
 
         return true;
+    }
+
+    byte[] Encrypt(string plainText)
+    {
+        AesManaged aesManaged = new AesManaged();
+        ICryptoTransform cryptoTransform = aesManaged.CreateEncryptor(key, iVector);
+        MemoryStream memoryStream = new MemoryStream();
+        CryptoStream cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write);
+        StreamWriter streamWriter = new StreamWriter(cryptoStream);
+        streamWriter.Write(plainText);
+
+        streamWriter.Close();
+        cryptoStream.Close();
+        memoryStream.Close();
+
+        return memoryStream.ToArray();
+    }
+
+    string Decrypt(byte[] encryptedText)
+    {
+        AesManaged aesManaged = new AesManaged();
+        ICryptoTransform decryptTransform = aesManaged.CreateDecryptor(key, iVector);
+        MemoryStream memoryStream = new MemoryStream(encryptedText);
+        CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptTransform, CryptoStreamMode.Read);
+        StreamReader streamReader = new StreamReader(cryptoStream);
+
+        string decryptedPlainText = streamReader.ReadToEnd();
+        streamReader.Close();
+        cryptoStream.Close();
+        memoryStream.Close();
+
+        return decryptedPlainText;
+
     }
 }
