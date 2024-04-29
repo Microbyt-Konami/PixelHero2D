@@ -21,6 +21,11 @@ public class ItemsManager : MonoBehaviour, ISerializable
         public int CoinShineCatched;
         public int CoinSpinCatched;
         public int PickHeartCatched;
+        public int OrderCurrent;
+        public bool CanDoubleJump;
+        public bool CanDash;
+        public bool CanEnterBallMode;
+        public bool CanDropBombs;
 
         public Prefs(ItemsManager itemManager)
         {
@@ -33,6 +38,11 @@ public class ItemsManager : MonoBehaviour, ISerializable
                 else if (item.Key == "PickHeart")
                     PickHeartCatched = item.Value.ItemsCatched;
             }
+            OrderCurrent = itemManager.orderCurrent;
+            CanDoubleJump = itemManager.playerExtrasTracker.CanDoubleJump;
+            CanDash = itemManager.playerExtrasTracker.CanDash;
+            CanEnterBallMode = itemManager.playerExtrasTracker.CanEnterBallMode;
+            CanDropBombs = itemManager.playerExtrasTracker.CanDropBombs;
         }
 
         public void Restore(ItemsManager itemsManager)
@@ -40,6 +50,11 @@ public class ItemsManager : MonoBehaviour, ISerializable
             itemsManager.items["CoinShine"].ItemsCatched = CoinShineCatched;
             itemsManager.items["CoinSpin"].ItemsCatched = CoinSpinCatched;
             itemsManager.items["PickHeart"].ItemsCatched = PickHeartCatched;
+            itemsManager.orderCurrent = OrderCurrent;
+            itemsManager.playerExtrasTracker.CanDoubleJump = CanDoubleJump;
+            itemsManager.playerExtrasTracker.CanDash = CanDash;
+            itemsManager.playerExtrasTracker.CanEnterBallMode = CanEnterBallMode;
+            itemsManager.playerExtrasTracker.CanDropBombs = CanDropBombs;
         }
     }
 
