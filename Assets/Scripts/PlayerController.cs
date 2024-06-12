@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, ISerializable
 {
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour, ISerializable
     private float ballModeCounter;
 
     // Compoments
+    private PlayerInput playerInput;
     private Rigidbody2D playerRB;
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
@@ -54,6 +56,17 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     // Id Parameters Animator
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
+
+    // Bits actions
+    private bool isJump;
+    private bool isAttack;
+
+    // Actions
+    private InputActionMap playerNormalMap;
+    private InputAction jumpPlayerNormalAction;
+    private InputAction attackPlayerNormalAction;
+    private InputAction jumpAction;
+    private InputAction attackAction;
 
     private class Prefs
     {
@@ -77,9 +90,60 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void Awake()
     {
+        playerInput = GetComponent<PlayerInput>();
         playerRB = GetComponent<Rigidbody2D>();
         transformPlayerController = GetComponent<Transform>();
         playerExtrasTracker = GetComponent<PlayerExtrasTracker>();
+    }
+
+    void OnEnable()
+    {
+        playerNormalMap = playerInput.actions.FindActionMap("PlayerNormal");
+        jumpPlayerNormalAction = playerNormalMap.FindAction("Jump");
+        jumpPlayerNormalAction.performed += JumpExample;
+        jumpPlayerNormalAction.canceled += StopJumpExample;
+        attackPlayerNormalAction = playerNormalMap.FindAction("Attack");
+        attackPlayerNormalAction.performed += AttackExample;
+        attackPlayerNormalAction.canceled += StopAttackExample;
+
+        ActivatePlayerNormal();
+    }
+
+    void OnDisable()
+    {
+        jumpPlayerNormalAction.performed -= JumpExample;
+        jumpPlayerNormalAction.canceled -= StopJumpExample;
+        attackPlayerNormalAction.performed -= AttackExample;
+        attackPlayerNormalAction.canceled -= StopAttackExample;
+    }
+
+    void JumpExample(InputAction.CallbackContext context)
+    {
+        isJump = true;
+    }
+
+    void StopJumpExample(InputAction.CallbackContext context)
+    {
+        isJump = false;
+    }
+
+    void AttackExample(InputAction.CallbackContext context)
+    {
+        isAttack = true;
+    }
+
+    void StopAttackExample(InputAction.CallbackContext context)
+    {
+        isAttack = false;
+    }
+
+    void ActivatePlayerNormal()
+    {
+        jumpAction = jumpPlayerNormalAction;
+        attackAction = attackPlayerNormalAction;
+
+        playerInput.SwitchCurrentActionMap("PlayerNormal");
+        Debug.Log("Cambio a Basic Map");
     }
 
     private void Start()
@@ -100,6 +164,7 @@ public class PlayerController : MonoBehaviour, ISerializable
         positionInitial = transformPlayerController.position;
         FindAnyObjectByType<SaveDataGame>().ObjectsToSerialize.Add(this);
     }
+
     void Update()
     {
         Dash();
@@ -144,7 +209,8 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void Shoot()
     {
-        if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
+        //if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
+        if (attackAction.WasPressedThisFrame() && standingPlayer.activeSelf)
         {
             ArrowController tempArrowController = Instantiate(arrowController, transformArrowPoint.position, transformArrowPoint.rotation);
 
@@ -159,7 +225,8 @@ public class PlayerController : MonoBehaviour, ISerializable
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
 
-        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
+        //if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
+        if (attackAction.WasPressedThisFrame() && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
             Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
@@ -180,7 +247,8 @@ public class PlayerController : MonoBehaviour, ISerializable
         // Se puede resolver por OverlapCircle o por Raycast
         //isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, isGroundedRange, selectLayerMask);
         isGrounded = Physics2D.Raycast(checkGroundPoint.position, Vector2.down, isGroundedRange, selectLayerMask);
-        if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
+        //if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
+        if (jumpAction.WasPressedThisFrame() && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         {
             if (isGrounded)
             {
