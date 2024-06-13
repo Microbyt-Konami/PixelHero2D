@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour, ISerializable
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
 
     // Bits actions
-    private bool isJump;
+    //private bool isJump;
     private bool isAttack;
 
     // Actions
@@ -67,11 +67,20 @@ public class PlayerController : MonoBehaviour, ISerializable
     private InputAction jumpPlayerNormalAction;
     private InputAction attackPlayerNormalAction;
     private InputAction dashPlayerNormalAction;
+    private InputAction switchMapPlayerNormalAction;
+    private InputActionMap playerAlternativeMap;
+    private InputAction hAxisPlayerAlternativeAction;
+    private InputAction vAxisPlayerAlternativeAction;
+    private InputAction jumpPlayerAlternativeAction;
+    private InputAction attackPlayerAlternativeAction;
+    private InputAction dashPlayerAlternativeAction;
+    private InputAction switchMapPlayerAlternativeAction;
     private InputAction hAxisAction;
     private InputAction vAxisAction;
     private InputAction jumpAction;
     private InputAction attackAction;
     private InputAction dashAction;
+    private InputAction switchMapAction;
 
     private class Prefs
     {
@@ -108,9 +117,50 @@ public class PlayerController : MonoBehaviour, ISerializable
         vAxisPlayerNormalAction = playerNormalMap.FindAction("Vertical Axis");
         jumpPlayerNormalAction = playerNormalMap.FindAction("Jump");
         attackPlayerNormalAction = playerNormalMap.FindAction("Attack");
+        attackPlayerNormalAction.performed += AttackExample;
+        attackPlayerNormalAction.canceled += AttackExample;
         dashPlayerNormalAction = playerNormalMap.FindAction("Dash");
+        switchMapPlayerNormalAction = playerNormalMap.FindAction("SwitchMap");
+        switchMapPlayerNormalAction.performed += SwitchActionMap;
+
+        playerAlternativeMap = playerInput.actions.FindActionMap("PlayerAlternative");
+        hAxisPlayerAlternativeAction = playerAlternativeMap.FindAction("Horizontal Axis");
+        vAxisPlayerAlternativeAction = playerAlternativeMap.FindAction("Vertical Axis");
+        jumpPlayerAlternativeAction = playerAlternativeMap.FindAction("Jump");
+        attackPlayerAlternativeAction = playerAlternativeMap.FindAction("Attack");
+        attackPlayerAlternativeAction.performed += AttackExample;
+        attackPlayerAlternativeAction.canceled += AttackExample;
+        dashPlayerAlternativeAction = playerAlternativeMap.FindAction("Dash");
+        switchMapPlayerAlternativeAction = playerAlternativeMap.FindAction("SwitchMap");
+        switchMapPlayerAlternativeAction.performed += SwitchActionMap;
 
         ActivatePlayerNormal();
+    }
+
+    private void OnDisable()
+    {
+        attackPlayerNormalAction.performed -= AttackExample;
+        attackPlayerNormalAction.canceled -= AttackExample;
+        attackPlayerAlternativeAction.performed -= AttackExample;
+        attackPlayerAlternativeAction.canceled -= AttackExample;
+        switchMapPlayerNormalAction.performed -= SwitchActionMap;
+        switchMapPlayerAlternativeAction.performed -= SwitchActionMap;
+    }
+
+    private void AttackExample(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            isAttack = true;
+        else if (context.canceled)
+            isAttack = false;
+    }
+
+    void SwitchActionMap(InputAction.CallbackContext context)
+    {
+        if (playerInput.currentActionMap == playerNormalMap)
+            ActivatePlayerAlternative();
+        else
+            ActivatePlayerNormal();
     }
 
     void ActivatePlayerNormal()
@@ -120,9 +170,23 @@ public class PlayerController : MonoBehaviour, ISerializable
         jumpAction = jumpPlayerNormalAction;
         attackAction = attackPlayerNormalAction;
         dashAction = dashPlayerNormalAction;
+        switchMapAction = switchMapPlayerNormalAction;
 
         playerInput.SwitchCurrentActionMap("PlayerNormal");
         Debug.Log("Cambio a Basic Map");
+    }
+
+    void ActivatePlayerAlternative()
+    {
+        hAxisAction = hAxisPlayerAlternativeAction;
+        vAxisAction = vAxisPlayerAlternativeAction;
+        jumpAction = jumpPlayerAlternativeAction;
+        attackAction = attackPlayerAlternativeAction;
+        dashAction = dashPlayerAlternativeAction;
+        switchMapAction = switchMapPlayerAlternativeAction;
+
+        playerInput.SwitchCurrentActionMap("PlayerAlternative");
+        Debug.Log("Cambio a Alternative Map");
     }
 
     private void Start()
@@ -152,6 +216,12 @@ public class PlayerController : MonoBehaviour, ISerializable
         Shoot();
         PlayDust();
         BallMode();
+        ResetInput();
+    }
+
+    private void ResetInput()
+    {
+        isAttack = false;
     }
 
     private void OnDrawGizmos()
@@ -188,8 +258,7 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void Shoot()
     {
-        //if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
-        if (attackAction.WasPressedThisFrame() && standingPlayer.activeSelf)
+        if (isAttack && standingPlayer.activeSelf)
         {
             ArrowController tempArrowController = Instantiate(arrowController, transformArrowPoint.position, transformArrowPoint.rotation);
 
@@ -204,14 +273,20 @@ public class PlayerController : MonoBehaviour, ISerializable
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
 
-        if (attackAction.WasPressedThisFrame() && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
+        if (isAttack && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
             Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
+    private float inputXOld = 0;
     private void Move()
     {
         float inputX = hAxisAction.ReadValue<float>() * moveSpeed;
 
+        if (inputXOld != inputX)
+        {
+            Debug.Log($"InputX is: {inputX}");
+            inputXOld = inputX;
+        }
         playerRB.velocity = new Vector2(inputX, playerRB.velocity.y);
         if (standingPlayer.activeSelf)
             animatorStandingPlayer.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
