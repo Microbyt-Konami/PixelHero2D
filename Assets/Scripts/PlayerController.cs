@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -63,10 +62,16 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     // Actions
     private InputActionMap playerNormalMap;
+    private InputAction hAxisPlayerNormalAction;
+    private InputAction vAxisPlayerNormalAction;
     private InputAction jumpPlayerNormalAction;
     private InputAction attackPlayerNormalAction;
+    private InputAction dashPlayerNormalAction;
+    private InputAction hAxisAction;
+    private InputAction vAxisAction;
     private InputAction jumpAction;
     private InputAction attackAction;
+    private InputAction dashAction;
 
     private class Prefs
     {
@@ -99,12 +104,15 @@ public class PlayerController : MonoBehaviour, ISerializable
     void OnEnable()
     {
         playerNormalMap = playerInput.actions.FindActionMap("PlayerNormal");
+        hAxisPlayerNormalAction = playerNormalMap.FindAction("Horizontal Axis");
+        vAxisPlayerNormalAction = playerNormalMap.FindAction("Vertical Axis");
         jumpPlayerNormalAction = playerNormalMap.FindAction("Jump");
         jumpPlayerNormalAction.performed += JumpExample;
         jumpPlayerNormalAction.canceled += StopJumpExample;
         attackPlayerNormalAction = playerNormalMap.FindAction("Attack");
         attackPlayerNormalAction.performed += AttackExample;
         attackPlayerNormalAction.canceled += StopAttackExample;
+        dashPlayerNormalAction = playerNormalMap.FindAction("Dash");
 
         ActivatePlayerNormal();
     }
@@ -119,11 +127,13 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     void JumpExample(InputAction.CallbackContext context)
     {
+        Debug.Log("JumpExample");
         isJump = true;
     }
 
     void StopJumpExample(InputAction.CallbackContext context)
     {
+        Debug.Log("StopJumpExample");
         isJump = false;
     }
 
@@ -139,8 +149,11 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     void ActivatePlayerNormal()
     {
+        hAxisAction = hAxisPlayerNormalAction;
+        vAxisAction = vAxisPlayerNormalAction;
         jumpAction = jumpPlayerNormalAction;
         attackAction = attackPlayerNormalAction;
+        dashAction = dashPlayerNormalAction;
 
         playerInput.SwitchCurrentActionMap("PlayerNormal");
         Debug.Log("Cambio a Basic Map");
@@ -186,7 +199,7 @@ public class PlayerController : MonoBehaviour, ISerializable
             afterDashCounter -= Time.deltaTime;
         else
         {
-            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf && playerExtrasTracker.CanDash)
+            if (dashAction.WasPressedThisFrame() && standingPlayer.activeSelf && playerExtrasTracker.CanDash)
             {
                 dashCounter = dashTime;
                 ShowAfterImage();
@@ -225,15 +238,13 @@ public class PlayerController : MonoBehaviour, ISerializable
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
 
-        //if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
         if (attackAction.WasPressedThisFrame() && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
             Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
     private void Move()
     {
-        // En juegos de plataforma mejor usar GetAxisRaw que da un valor entre 0 y 1 para no hacer acceleraciones
-        float inputX = Input.GetAxisRaw("Horizontal") * moveSpeed;
+        float inputX = hAxisAction.ReadValue<float>() * moveSpeed;
 
         playerRB.velocity = new Vector2(inputX, playerRB.velocity.y);
         if (standingPlayer.activeSelf)
@@ -247,7 +258,6 @@ public class PlayerController : MonoBehaviour, ISerializable
         // Se puede resolver por OverlapCircle o por Raycast
         //isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, isGroundedRange, selectLayerMask);
         isGrounded = Physics2D.Raycast(checkGroundPoint.position, Vector2.down, isGroundedRange, selectLayerMask);
-        //if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         if (jumpAction.WasPressedThisFrame() && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         {
             if (isGrounded)
@@ -310,7 +320,7 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void BallMode()
     {
-        float inputVertical = Input.GetAxisRaw("Vertical");
+        float inputVertical = vAxisAction.ReadValue<float>();
 
         if (((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf)) && playerExtrasTracker.CanEnterBallMode)
         {
