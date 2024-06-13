@@ -107,44 +107,10 @@ public class PlayerController : MonoBehaviour, ISerializable
         hAxisPlayerNormalAction = playerNormalMap.FindAction("Horizontal Axis");
         vAxisPlayerNormalAction = playerNormalMap.FindAction("Vertical Axis");
         jumpPlayerNormalAction = playerNormalMap.FindAction("Jump");
-        jumpPlayerNormalAction.performed += JumpExample;
-        jumpPlayerNormalAction.canceled += StopJumpExample;
         attackPlayerNormalAction = playerNormalMap.FindAction("Attack");
-        attackPlayerNormalAction.performed += AttackExample;
-        attackPlayerNormalAction.canceled += StopAttackExample;
         dashPlayerNormalAction = playerNormalMap.FindAction("Dash");
 
         ActivatePlayerNormal();
-    }
-
-    void OnDisable()
-    {
-        jumpPlayerNormalAction.performed -= JumpExample;
-        jumpPlayerNormalAction.canceled -= StopJumpExample;
-        attackPlayerNormalAction.performed -= AttackExample;
-        attackPlayerNormalAction.canceled -= StopAttackExample;
-    }
-
-    void JumpExample(InputAction.CallbackContext context)
-    {
-        Debug.Log("JumpExample");
-        isJump = true;
-    }
-
-    void StopJumpExample(InputAction.CallbackContext context)
-    {
-        Debug.Log("StopJumpExample");
-        isJump = false;
-    }
-
-    void AttackExample(InputAction.CallbackContext context)
-    {
-        isAttack = true;
-    }
-
-    void StopAttackExample(InputAction.CallbackContext context)
-    {
-        isAttack = false;
     }
 
     void ActivatePlayerNormal()
