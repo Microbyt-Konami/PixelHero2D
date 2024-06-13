@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, ISerializable
 {
@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour, ISerializable
     private float ballModeCounter;
 
     // Compoments
+    private PlayerInput playerInput;
     private Rigidbody2D playerRB;
     private Animator animatorStandingPlayer;
     private Animator animatorBallPlayer;
@@ -54,6 +55,32 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     // Id Parameters Animator
     private int idSpeed, idIsGrounded, idShootArrow, idCanDoubleJump;
+
+    // Bits actions
+    //private bool isJump;
+    private bool isAttack;
+
+    // Actions
+    private InputActionMap playerNormalMap;
+    private InputAction hAxisPlayerNormalAction;
+    private InputAction vAxisPlayerNormalAction;
+    private InputAction jumpPlayerNormalAction;
+    private InputAction attackPlayerNormalAction;
+    private InputAction dashPlayerNormalAction;
+    private InputAction switchMapPlayerNormalAction;
+    private InputActionMap playerAlternativeMap;
+    private InputAction hAxisPlayerAlternativeAction;
+    private InputAction vAxisPlayerAlternativeAction;
+    private InputAction jumpPlayerAlternativeAction;
+    private InputAction attackPlayerAlternativeAction;
+    private InputAction dashPlayerAlternativeAction;
+    private InputAction switchMapPlayerAlternativeAction;
+    private InputAction hAxisAction;
+    private InputAction vAxisAction;
+    private InputAction jumpAction;
+    private InputAction attackAction;
+    private InputAction dashAction;
+    private InputAction switchMapAction;
 
     private class Prefs
     {
@@ -77,9 +104,89 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void Awake()
     {
+        playerInput = GetComponent<PlayerInput>();
         playerRB = GetComponent<Rigidbody2D>();
         transformPlayerController = GetComponent<Transform>();
         playerExtrasTracker = GetComponent<PlayerExtrasTracker>();
+    }
+
+    void OnEnable()
+    {
+        playerNormalMap = playerInput.actions.FindActionMap("PlayerNormal");
+        hAxisPlayerNormalAction = playerNormalMap.FindAction("Horizontal Axis");
+        vAxisPlayerNormalAction = playerNormalMap.FindAction("Vertical Axis");
+        jumpPlayerNormalAction = playerNormalMap.FindAction("Jump");
+        attackPlayerNormalAction = playerNormalMap.FindAction("Attack");
+        attackPlayerNormalAction.performed += AttackExample;
+        attackPlayerNormalAction.canceled += AttackExample;
+        dashPlayerNormalAction = playerNormalMap.FindAction("Dash");
+        switchMapPlayerNormalAction = playerNormalMap.FindAction("SwitchMap");
+        switchMapPlayerNormalAction.performed += SwitchActionMap;
+
+        playerAlternativeMap = playerInput.actions.FindActionMap("PlayerAlternative");
+        hAxisPlayerAlternativeAction = playerAlternativeMap.FindAction("Horizontal Axis");
+        vAxisPlayerAlternativeAction = playerAlternativeMap.FindAction("Vertical Axis");
+        jumpPlayerAlternativeAction = playerAlternativeMap.FindAction("Jump");
+        attackPlayerAlternativeAction = playerAlternativeMap.FindAction("Attack");
+        attackPlayerAlternativeAction.performed += AttackExample;
+        attackPlayerAlternativeAction.canceled += AttackExample;
+        dashPlayerAlternativeAction = playerAlternativeMap.FindAction("Dash");
+        switchMapPlayerAlternativeAction = playerAlternativeMap.FindAction("SwitchMap");
+        switchMapPlayerAlternativeAction.performed += SwitchActionMap;
+
+        ActivatePlayerNormal();
+    }
+
+    private void OnDisable()
+    {
+        attackPlayerNormalAction.performed -= AttackExample;
+        attackPlayerNormalAction.canceled -= AttackExample;
+        attackPlayerAlternativeAction.performed -= AttackExample;
+        attackPlayerAlternativeAction.canceled -= AttackExample;
+        switchMapPlayerNormalAction.performed -= SwitchActionMap;
+        switchMapPlayerAlternativeAction.performed -= SwitchActionMap;
+    }
+
+    private void AttackExample(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            isAttack = true;
+        else if (context.canceled)
+            isAttack = false;
+    }
+
+    void SwitchActionMap(InputAction.CallbackContext context)
+    {
+        if (playerInput.currentActionMap == playerNormalMap)
+            ActivatePlayerAlternative();
+        else
+            ActivatePlayerNormal();
+    }
+
+    void ActivatePlayerNormal()
+    {
+        hAxisAction = hAxisPlayerNormalAction;
+        vAxisAction = vAxisPlayerNormalAction;
+        jumpAction = jumpPlayerNormalAction;
+        attackAction = attackPlayerNormalAction;
+        dashAction = dashPlayerNormalAction;
+        switchMapAction = switchMapPlayerNormalAction;
+
+        playerInput.SwitchCurrentActionMap("PlayerNormal");
+        Debug.Log("Cambio a Basic Map");
+    }
+
+    void ActivatePlayerAlternative()
+    {
+        hAxisAction = hAxisPlayerAlternativeAction;
+        vAxisAction = vAxisPlayerAlternativeAction;
+        jumpAction = jumpPlayerAlternativeAction;
+        attackAction = attackPlayerAlternativeAction;
+        dashAction = dashPlayerAlternativeAction;
+        switchMapAction = switchMapPlayerAlternativeAction;
+
+        playerInput.SwitchCurrentActionMap("PlayerAlternative");
+        Debug.Log("Cambio a Alternative Map");
     }
 
     private void Start()
@@ -100,6 +207,7 @@ public class PlayerController : MonoBehaviour, ISerializable
         positionInitial = transformPlayerController.position;
         FindAnyObjectByType<SaveDataGame>().ObjectsToSerialize.Add(this);
     }
+
     void Update()
     {
         Dash();
@@ -108,6 +216,12 @@ public class PlayerController : MonoBehaviour, ISerializable
         Shoot();
         PlayDust();
         BallMode();
+        ResetInput();
+    }
+
+    private void ResetInput()
+    {
+        isAttack = false;
     }
 
     private void OnDrawGizmos()
@@ -121,7 +235,7 @@ public class PlayerController : MonoBehaviour, ISerializable
             afterDashCounter -= Time.deltaTime;
         else
         {
-            if (Input.GetButtonDown("Fire2") && standingPlayer.activeSelf && playerExtrasTracker.CanDash)
+            if (dashAction.WasPressedThisFrame() && standingPlayer.activeSelf && playerExtrasTracker.CanDash)
             {
                 dashCounter = dashTime;
                 ShowAfterImage();
@@ -144,7 +258,7 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void Shoot()
     {
-        if (Input.GetButtonDown("Fire1") && standingPlayer.activeSelf)
+        if (isAttack && standingPlayer.activeSelf)
         {
             ArrowController tempArrowController = Instantiate(arrowController, transformArrowPoint.position, transformArrowPoint.rotation);
 
@@ -159,15 +273,20 @@ public class PlayerController : MonoBehaviour, ISerializable
             animatorStandingPlayer.SetTrigger(idShootArrow);
         }
 
-        if (Input.GetButtonDown("Fire1") && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
+        if (isAttack && ballPlayer.activeSelf && playerExtrasTracker.CanDropBombs)
             Instantiate(prefabBomb, transformBombPoint.position, Quaternion.identity);
     }
 
+    private float inputXOld = 0;
     private void Move()
     {
-        // En juegos de plataforma mejor usar GetAxisRaw que da un valor entre 0 y 1 para no hacer acceleraciones
-        float inputX = Input.GetAxisRaw("Horizontal") * moveSpeed;
+        float inputX = hAxisAction.ReadValue<float>() * moveSpeed;
 
+        if (inputXOld != inputX)
+        {
+            Debug.Log($"InputX is: {inputX}");
+            inputXOld = inputX;
+        }
         playerRB.velocity = new Vector2(inputX, playerRB.velocity.y);
         if (standingPlayer.activeSelf)
             animatorStandingPlayer.SetFloat(idSpeed, Mathf.Abs(playerRB.velocity.x));
@@ -180,7 +299,7 @@ public class PlayerController : MonoBehaviour, ISerializable
         // Se puede resolver por OverlapCircle o por Raycast
         //isGrounded = Physics2D.OverlapCircle(checkGroundPoint.position, isGroundedRange, selectLayerMask);
         isGrounded = Physics2D.Raycast(checkGroundPoint.position, Vector2.down, isGroundedRange, selectLayerMask);
-        if (Input.GetButtonDown("Jump") && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
+        if (jumpAction.WasPressedThisFrame() && (isGrounded || (canDoubleJump && playerExtrasTracker.CanDoubleJump)))
         {
             if (isGrounded)
             {
@@ -242,7 +361,7 @@ public class PlayerController : MonoBehaviour, ISerializable
 
     private void BallMode()
     {
-        float inputVertical = Input.GetAxisRaw("Vertical");
+        float inputVertical = vAxisAction.ReadValue<float>();
 
         if (((inputVertical <= -.9f && !ballPlayer.activeSelf) || (inputVertical >= .9f && ballPlayer.activeSelf)) && playerExtrasTracker.CanEnterBallMode)
         {
